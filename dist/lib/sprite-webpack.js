@@ -20,10 +20,6 @@ var _async = require('async');
 
 var _async2 = _interopRequireDefault(_async);
 
-var _lwip = require('lwip');
-
-var _lwip2 = _interopRequireDefault(_lwip);
-
 var _imageinfo = require('./utils/imageinfo');
 
 var _imageinfo2 = _interopRequireDefault(_imageinfo);
@@ -49,6 +45,8 @@ var _underscore = require('./utils/underscore');
 var _underscore2 = _interopRequireDefault(_underscore);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Jimp = require('jimp');
 
 var opts = _underscore2.default.clone(_config2.default);
 
@@ -220,8 +218,9 @@ var initConfig = function initConfig(config) {
   }
 
   var color = new _color2.default(config.background);
-  config.color = color.rgbArray();
-  config.color.push(config.opacity);
+  //config.color = color.rgbArray();
+  config.color = color.rgbString();
+  //  config.color.push(config.opacity);
 
   config['reqBase64'] = false;
 
@@ -507,14 +506,15 @@ var createImg = function createImg(tCallbackFn) {
     var tItemX = void 0;
     var tItemY = void 0;
     _async2.default.waterfall([function (next) {
-      _lwip2.default.create(layout.width, layout.height, opts.color, next);
+      console.log('!!!!!!!!!', opts.color, next);
+      new Jimp(layout.width, layout.height, opts.color, next);
     }, function (image, next) {
       _async2.default.eachSeries(layout.items, function (item, callback) {
         tItemX = item.x + opts.margin;
         tItemY = item.y + opts.margin;
 
-        _lwip2.default.open(item.extra.imgPath, function (err, imgObj) {
-          image.paste(tItemX, tItemY, imgObj, callback);
+        Jimp.read(item.extra.imgPath, function (err, imgObj) {
+          image.composite(imgObj, tItemX, tItemY, callback);
         });
       }, function () {
         next(null, image);
@@ -532,14 +532,14 @@ var createImg = function createImg(tCallbackFn) {
 
         image.clone(function (err, clone) {
           clone.resize(resizeW, resizeY, 'grid', function (err, image) {
-            image.writeFile(resizeImgPath, function (err, file) {
+            image.write(resizeImgPath, function (err, file) {
               // console.log('ResizedImage has been created')
             });
           });
         });
       }
 
-      image.writeFile(imgFinalPath, function (err, file) {
+      image.write(imgFinalPath, function (err, file) {
         // console.log('SpriteImage has been created')
         next();
       });

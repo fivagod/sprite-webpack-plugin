@@ -17,10 +17,9 @@ var Color = function Color(obj) {
       hwb: [0, 0, 0],
       cmyk: [0, 0, 0, 0],
       alpha: 1
-   };
 
-   // parse Color() argument
-   if (typeof obj == "string") {
+      // parse Color() argument
+   };if (typeof obj == "string") {
       var vals = string.getRgba(obj);
       if (vals) {
          this.setValues("rgb", vals);
