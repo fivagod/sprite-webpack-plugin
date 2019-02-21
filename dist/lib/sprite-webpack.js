@@ -506,7 +506,6 @@ var createImg = function createImg(tCallbackFn) {
     var tItemX = void 0;
     var tItemY = void 0;
     _async2.default.waterfall([function (next) {
-      console.log('!!!!!!!!!', opts.color, next);
       new Jimp(layout.width, layout.height, opts.color, next);
     }, function (image, next) {
       _async2.default.eachSeries(layout.items, function (item, callback) {
